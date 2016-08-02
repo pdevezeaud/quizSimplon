@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Quizz;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -52,15 +53,14 @@ class DefaultController extends Controller
     }
 
     /**
-     * @param Quizz $quizz
      * @return JsonResponse
-     * @Route("/verif/{id}", name="verification", options={"expose"=true})
+     * @Route("/verif/{id}/{content}", name="verification", options={"expose"=true})
      */
-    public function verifAction(Quizz $quizz)
+    public function verifAction($id, $content)
     {
-        $quizzReponses = $quizz->getReponse();
-        if ($quizzReponses == $quizz->getQuestion()) {
-            return new JsonResponse("OK", 200);
+        $repository = $this->getDoctrine()->getRepository(Quizz::class)->find($id)->getReponse();
+        if ($content == $repository) {
+            return new JsonResponse('OK', 200);
         }
         return new JsonResponse('Vous n\'avez pas trouvé toutes les réponses');
     }
