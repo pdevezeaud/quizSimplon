@@ -1,28 +1,42 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    {% for quizzs in questions %}
-        <p id="quizz{{ quizzs.id }}">{{ quizzs.question }}</p>
-        <p id="reponse{{ quizzs.id }}"></p>
-        <input id="{{ quizzs.id }}" class="verif" type="text">
-    {% endfor %}
+    <form>
+        {% for quizzs in questions %}
+            <div id="form{{ quizzs.id }}" class="form-group">
+                <label for="question{{ quizzs.id }}">{{ quizzs.question }}</label>
+                <input type="text" class="form-control verif" id="{{ quizzs.id }}" placeholder="Réponse">
+            </div>
+            <p id="quizz{{ quizzs.id }}"></p>
+        {% endfor %}
+    </form>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script>
         $(document).ready(function () {
+            var points = 0;
             $('.verif').on('focusout', function () {
                 var id = $(this).attr('id');
                 var content = $(this).val();
-                $.ajax({
-                    type: 'POST',
-                    url: Routing.generate('verification', {id: id, content: content}),
-                    dataType: "json",
-                    success: function (data) {
-                        if (data == 'OK') {
-                            $('#reponse' + id).text('Bon');
-                        } else {
-                            $('#reponse' + id).text(data);
+                if (points <= 10) {
+                    $.ajax({
+                        type: 'POST',
+                        url: Routing.generate('verification', {id: id, content: content}),
+                        dataType: "json",
+                        success: function (data) {
+                            if (data == "OK") {
+                                $('#form' + id).removeClass("has-error").addClass("has-success");
+                                points++;
+                            } else {
+                                $('#form' + id).removeClass("has-success").addClass("has-error");
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            if (jqXHR.status == 404) {
+                                $('#form' + id).addClass("has-error");
+                            }
                         }
-                    }
-                });
+                    });
+                    console.log(points);
+                }
             });
         });
     </script>
