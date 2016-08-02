@@ -1,8 +1,28 @@
 {% extends 'base.html.twig' %}
 {% block body %}
     {% for quizzs in questions %}
-        <p>{{ quizzs.question }}</p>
-        <input type="text">
+        <p id="quizz +{{ quizzs.id }}">{{ quizzs.question }}</p>
+        <input id="{{ quizzs.id }}" class="verif" type="text">
     {% endfor %}
     <button type="submit">Valider les réponses</button>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.verif').on('focusout', function () {
+                var id = $(this).attr('id');
+                $.ajax({
+                    type: 'POST',
+                    url: Routing.generate('verification', {id: id}),
+                    dataType: "json",
+                    success: function (data) {
+                        if (data == "OK") {
+                            $('#quizz' + id).html(data).append(data);
+                        } else {
+                            $('#quizz' + id).html(data).append(data);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}
