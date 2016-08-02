@@ -36,11 +36,13 @@ class DefaultController extends Controller
             ->add('Envoyer', SubmitType::class)
             ->getForm();
 
+        $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($quizz);
             $em->flush();
-            return $this->redirectToRoute('');
+            return $this->redirectToRoute('homepage');
         }
         return $this->render(':default:addquiz.html.twig', array(
             'form' => $form->createView(),

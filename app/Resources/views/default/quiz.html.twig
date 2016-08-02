@@ -1,1 +1,8 @@
 {% extends 'base.html.twig' %}
+{% block body %}
+    {% for quizzs in questions %}
+        <p>{{ quizzs.question }}</p>
+        <input type="text">
+    {% endfor %}
+    <button type="submit">Valider les réponses</button>
+{% endblock %}
