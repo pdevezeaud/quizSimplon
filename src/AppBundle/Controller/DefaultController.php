@@ -7,7 +7,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use FOS\JsRoutingBundle\FOSJsRoutingBundle;
 
 class DefaultController extends Controller
 {
@@ -36,14 +38,35 @@ class DefaultController extends Controller
             ->add('Envoyer', SubmitType::class)
             ->getForm();
 
+        $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($quizz);
             $em->flush();
-            return $this->redirectToRoute('');
+            return $this->redirectToRoute('homepage');
         }
         return $this->render(':default:addquiz.html.twig', array(
             'form' => $form->createView(),
         ));
+    }
+
+    /**
+     * @param Quizz $quizz
+     * @return JsonResponse
+     * @Route("/verif/{id}", name="verification", options={"expose"=true})
+     */
+    public function verifAction(Quizz $quizz)
+    {
+        $quizzReponses = $quizz->getReponse();
+        if ($quizzReponses == $quizz->getQuestion()) {
+            return new JsonResponse("OK", 200);
+        }
+        return new JsonResponse('Vous n\'avez pas trouvé toutes les réponses');
+    }
+
+    public function allGoodAction(Quizz $quizz)
+    {
+
     }
 }
