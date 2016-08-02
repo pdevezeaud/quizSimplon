@@ -1,15 +1,25 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <form>
-        {% for quizzs in questions %}
-            <div id="form{{ quizzs.id }}" class="form-group">
-                <label for="question{{ quizzs.id }}">{{ quizzs.question }}</label>
-                <input type="text" class="form-control verif" id="{{ quizzs.id }}" placeholder="Réponse">
+    <div id="page_effect">
+        <form>
+            <div class="row">
+                {% for quizzs in questions %}
+                    <div class="col-md-12">
+                        <div id="form{{ quizzs.id }}" class="form-group has-feedback">
+                            <label class="" for="question{{ quizzs.id }}">{{ quizzs.question }}</label>
+                            <input type="text" class="form-control verif" id="{{ quizzs.id }}" placeholder="Réponse">
+                            <i id="icon{{ quizzs.id }}" class="glyphicon glyphicon-remove form-control-feedback"></i>
+                        </div>
+                        <p id="quizz{{ quizzs.id }}"></p>
+                    </div>
+                {% endfor %}
             </div>
-            <p id="quizz{{ quizzs.id }}"></p>
-        {% endfor %}
-    </form>
+        </form>
+    </div>
+    <div class="hidden" id="Winner">
+        <h1 class="text-center jumbotron">HEY WELL DONE ! YOU WON !<br> REFRESH TO PLAY AGAIN <br>XD</h1>
+    </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script>
         $(document).ready(function () {
@@ -25,18 +35,26 @@
                         success: function (data) {
                             if (data == "OK") {
                                 $('#form' + id).removeClass("has-error").addClass("has-success");
+                                $('#icon' + id).removeClass("glyphicon-remove").addClass("glyphicon-ok");
                                 points++;
                             } else {
                                 $('#form' + id).removeClass("has-success").addClass("has-error");
+                                $('#icon' + id).removeClass("glyphicon-ok").addClass("glyphicon-remove");
+
                             }
                         },
-                        error: function (jqXHR, textStatus, errorThrown) {
+                        error: function (jqXHR) {
                             if (jqXHR.status == 404) {
                                 $('#form' + id).addClass("has-error");
+                                $('#icon' + id).addClass("glyphicon-remove");
+
                             }
                         }
                     });
-                    console.log(points);
+                    if (points === 10) {
+                        $('#page_effect').fadeOut('slow');
+                        $('#Winner').fadeIn('slow').removeClass('hidden');
+                    }
                 }
             });
         });

@@ -20,7 +20,7 @@ class DefaultController extends Controller
     public function indexAction()
     {
         $quizz = $this->getDoctrine()->getRepository(Quizz::class)->findAll();
-        return $this->render(':default:quiz.html.twig', array(
+        return $this->render('default/quiz.html.twig', array(
             'questions' => $quizz,
         ));
     }
